@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>メモ帳</title>
+    <style>
+      #viwe{
+        min-width: 250px;
+        min-height: 400px;
+        display: block;
+        margin-top: 10px;
+        margin-bottom: 10px;     
+      }
+      #name{
+        width: 250px;
+        height: 30px;
+      }
+
+      #list{
+        margin-left: 300px;
+        margin-top: -500px;
+        display: inline-block;
+        vertical-align: top;
+      }
+
+     *{
+       padding: 0px 5px;
+     }
+
+     ul li{
+       border-bottom: 2px solid orange;
+       margin-bottom: 10px;
+       text-align:left;
+       text-size-adjust: 5px;
+       list-style: none;
+       white-space: pre;       
+     }
+
+     #t{
+       border-bottom: 2px solid blue !important;
+     }
+
+     @media screen and (max-width :350px){
+       #name{
+         width: 160px;
+       }
+       #viwe{
+         min-width: 170px;
+       }
+
+       #list{
+         margin-left: 180px;
+         word-wrap: break-word;
+       }
+     }
+    </style>
+  </head>
+  <body>
+
+    <header>
+      <h1>メモ帳</h1>
+    </header>
+    
+    
+
+    <form id="f">
+
+    <input type="search" id="name" placeholder="題名"> 
+
+    <textarea id="viwe" placeholder="自由にお使いください。" ></textarea>
+    
+    
+
+    <input type="button" id="save" value="保存">
+
+    <input type="button" id="call" value="クリア">
+
+    <input type="button" id="delete" value="削除">
+
+  </form>
+
+   <ul id="list">
+      <li id="t"></li>
+    </ul>
+
+    <script>
+      const savebtn=document.getElementById('save');
+      const callbtn=document.getElementById('call');
+      const tarea=document.getElementById('viwe');
+      const namearea=document.getElementById('name');
+      const list =document.getElementById('list');
+      const del=document.getElementById('delete');
+
+      window.onload=function DATALOAD(){
+        //console.log("111");
+        var datacount=localStorage.length;//数える
+
+        var datalist=JSON.parse(localStorage.getItem('memodata'));
+
+        if(localStorage.hasOwnProperty('memodata')) {
+
+          var datacount2=Object.keys(datalist).length;
+        }else{
+          var datacount2=0;
+        }
+
+        
+
+        console.log(datacount);
+        console.log(datalist);
+        console.log(datacount2+'!!!!!!!!!');
+        switch(datacount2){
+          case 0:
+          console.log('no data...');
+          document.getElementById('t').innerHTML='記録がありません。';
+        break;
+
+          default:
+
+           document.getElementById('t').innerHTML='メモリスト(↓クリックして表示)';
+
+          var keys1=[];
+          var values=[];
+
+          for(let step=0; step < datacount2; step++){
+            keys1.push(Object.keys(datalist)[step]);
+            
+
+            values.push(datalist[Object.keys(datalist)[step]]);
+            
+          }
+
+          console.log(keys1);
+          console.log(values);
+
+
+          for (let step = 0; step < datacount2; step++) {
+          // 値が 0 から 4 まで計 5 回実行される
+          //console.log('一歩西に歩く');
+
+         
+
+          var calling =localStorage.key(step);
+          var calling2 =keys1[step];
+          var calling3 =values[step];
+
+          console.log(calling);
+          console.log(calling2);
+          console.log(calling3);
+
+          const make =document.createElement('li');
+
+          list.appendChild(make);
+
+          make.id=step;
+
+          document.getElementById(step).innerHTML='<pre>'+calling2+'</pre>';
+
+          document.getElementById(step).style.height= '20px';
+
+          document.getElementById(step).onclick=function call(){
+
+            var aaa= document.getElementById(step).textContent;
+
+            namearea.value=aaa;
+
+
+            const dataname=namearea.value;
+
+                    //var calldata=localStorage.getItem(dataname);
+                    
+
+                    //console.log(calldata);
+
+                    tarea.value=datalist[aaa];
+                    
+                    }
+
+        
+          }
+
+        }
+
+      }
+
+      savebtn.onclick=function SAVE(){
+
+        var result = window.confirm('上書き保存しますか？');
+
+        if( result ) {
+            console.log('OKがクリックされました');
+
+          const data=tarea.value;
+                  console.log(data);
+
+                  const dataname=namearea.value;
+                  console.log(dataname);
+
+                  //localStorage.setItem(dataname,data);
+
+                  if(localStorage.hasOwnProperty('memodata')) {//キーがあるかどうか
+
+                  console.log('このキーは存在しています');
+
+                  var datalist = JSON.parse(localStorage.getItem("memodata"));
+                  datalist[dataname] = data;
+
+                  //保存する
+                  localStorage.setItem("memodata", JSON.stringify(datalist));
+
+                  }else{
+                    
+                    var datalist={};
+
+                  datalist[dataname]=data;
+
+                  localStorage.setItem('memodata',JSON.stringify(datalist));
+
+                  var poo=localStorage.getItem('memodata');
+
+                  poo= JSON.parse(poo);
+
+                  for (var i = 0; i < poo.length; i++) {
+                      for (var key in poo[i]) {
+                        console.log(poo[i][key]);
+                      }
+                  }
+
+                  }
+
+                  
+
+                  console.log(poo);
+
+                  //var calldata=localStorage.getItem(dataname);
+
+                  //console.log(calldata);
+
+                  console.log("保存完了");
+
+                  location.reload();
+
+        }
+        else {
+            console.log('キャンセルがクリックされました');
+        }
+
+        
+
+      }
+
+      callbtn.onclick=function DATACALL(){
+
+        tarea.value="";
+        namearea.value="";
+
+      }
+
+
+      del.onclick=function DELETE(){
+
+        const dnn=namearea.value;
+        var result = window.confirm('「'+dnn+'」を削除しますか？');
+
+        if( result ) {
+            console.log('OKがクリックされました');
+
+            if(localStorage.hasOwnProperty('memodata')) {
+
+              console.log('このキーは存在しています');
+
+              var datalist = JSON.parse(localStorage.getItem("memodata"));
+              
+              delete datalist[dnn];
+
+              localStorage.setItem('memodata',JSON.stringify(datalist));
+
+            }
+
+        //localStorage.removeItem(dnn);
+
+        location.reload();
+        }else{
+          console.log('キャンセル');
+        }
+
+      }
+
+    </script>
+  </body>
+</html>
